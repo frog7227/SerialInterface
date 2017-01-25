@@ -30,7 +30,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	    Container c = getContentPane();
 	    c.setBackground(Color.WHITE);
 	    c.setLayout(new FlowLayout());
-	    c.add(new JLabel("This Part is usesless!", 10));
+	    c.add(new JLabel("This Part is useless!", 10));
 	  }
 	//--end of main GUI
 	
