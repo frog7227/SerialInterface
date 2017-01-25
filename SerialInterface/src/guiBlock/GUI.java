@@ -190,7 +190,11 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         rbMenuItem.setSelected(true);
         SARate.add(rbMenuItem);
         rbMenuItem.addActionListener(new ActionListener()
-        {public void actionPerformed(ActionEvent e){Seconds = Double.parseDouble(JOptionPane.showInputDialog("Custom time (Seconds)"));}});
+        {public void actionPerformed(ActionEvent e){
+        	String SecondsInput = JOptionPane.showInputDialog("Custom time (Seconds)");
+        	if(SecondsInput == null || SecondsInput.isEmpty()) errorDialog("Invalid Entry");
+        	else Seconds = Double.parseDouble(SecondsInput);
+        	}});
         SAmenu.add(rbMenuItem);
         //--
         
