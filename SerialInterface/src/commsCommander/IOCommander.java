@@ -25,10 +25,10 @@ public static Runnable TimedSender;
 
 
 }
-	public static void SRQData(boolean run, double SEC){
+	public static void SRQData(boolean run, double SEC, int mode, double parameter){
 		if(run){
 		TimerTrash.ChangeThread(false);
-		TimedSender = new TimerTrash(SEC);
+		TimedSender = new TimerTrash(SEC, mode, parameter);
 		new Thread(TimedSender).start();
 		}else{
 			TimerTrash.ChangeThread(true);

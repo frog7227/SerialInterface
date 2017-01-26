@@ -13,7 +13,7 @@ public static void WriteFile(String Filename){
 	try {
 		if (Filename.indexOf(".") > 0)
 		Filename = Filename.substring(0, Filename.lastIndexOf("."));
-		System.out.println(Filename + ".csv");
+		//System.out.println(Filename + ".csv"); Used for testing, done with it for now
 		fileWriter = new FileWriter(Filename + ".csv");
 		AppendCSV("Display One,Display Two");
 	} catch (IOException e1) {

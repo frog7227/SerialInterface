@@ -20,8 +20,8 @@ import serialconnection.DiscoverPorts;
 
 public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static String  comPort = "COM1";
-	public static int Baud = 115200;
-	public static double Seconds = 1;
+	public static int Baud = 115200, aquireMode = 2;
+	public static double Seconds = 1,sendParameter = 1;
 	public static boolean isAquiring,isConnected, fileChosen;
 	public final static ImageIcon IOIOIcon = new ImageIcon("icon/IOIOI_mini.png", "IOIOI Icon");
 	public GUI()   // Constructor
@@ -87,7 +87,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         menuItem.addActionListener(new ActionListener()
         {public void actionPerformed(ActionEvent e){
         	//System.out.println("Placeholder for Save");
-        	IOCommander.SRQData(false, Seconds);
+        	IOCommander.SRQData(false, Seconds, 0,0);
         	if(fileChosen) CSVFileHandling.SaveCSV();
         	else errorDialog("No file or changes to Save!");
         	fileChosen=false;
@@ -244,13 +244,14 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         startStop.addActionListener(new ActionListener()
         {public void actionPerformed(ActionEvent e){
         	if(isConnected && fileChosen){
-        	IOCommander.SRQData(!isAquiring, Seconds);
-        	isAquiring =  !isAquiring;
+        	IOCommander.SRQData(!isAquiring, Seconds,aquireMode,sendParameter);
+        	System.out.println(sendParameter);
+        	if(aquireMode == 1) isAquiring =  !isAquiring;
         	/*
         	 if(!isAquiring) System.out.println("Stopped");
         	else System.out.println("Started");
         	*/
-        	}else if(!isConnected)errorDialog("You never connected to the port " + comPort + "!");
+        	}else if(!isConnected)errorDialog("You never connected to any serial port!");
         	else errorDialog("file was not chosen!");
         }});
         
