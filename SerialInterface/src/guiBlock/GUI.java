@@ -24,16 +24,65 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static double Seconds = 1,sendParameter = 1;
 	public static boolean isAquiring,isConnected, fileChosen;
 	public final static ImageIcon IOIOIcon = new ImageIcon("icon/IOIOI_mini.png", "IOIOI Icon");
+	public static String[] BottomBar;
+	
+	
 	public GUI()   // Constructor
 	  {
 		super("GDM-8251A Remote Control Console");// Title Bar
 	    Container c = getContentPane();
 	    c.setBackground(Color.WHITE);
-	    c.setLayout(new FlowLayout());
+	    c.setLayout(new BorderLayout());
 	    c.add(new JLabel("This Part is useless!", 10));
+	    StatusBar statusBar = new StatusBar();
+	    getContentPane().add(statusBar, java.awt.BorderLayout.PAGE_END);
+	    
 	  }
-	//--end of main GUI
 	
+	
+	
+	
+	
+	//--end of main GUI
+	//begin of status bar
+	
+	public class StatusBar extends JLabel {
+
+	    /** Creates a new instance of StatusBar */
+	    public StatusBar() {
+	        super();
+	        super.setPreferredSize(new Dimension(super.getWidth(), 16));
+	       // super.getRootPane().setBackground(Color.lightGray);
+	        setMessage("Not Aquiring", "Acq");
+	        
+	    }
+
+	    public void setMessage(String message,String Element) {
+	    	
+	    	int offset = 0;
+	    	switch(Element){
+	    	case "Acq":
+	    		offset = 1;
+	    		break;
+	    	case "box":
+	    		//stub
+	    		break;
+	    	case "Points":
+	    		offset = 64;
+	    		break;
+	    		
+	    	default:
+	    		errorDialog("Invalid Element '" +  Element + "' Was recieved!");
+	    		break;
+	    	}
+	    	//add for loop to add spaces to fix offset, then append the textJ
+	    	
+	    	//setHorizontalTextPosition(offset);
+	        setText(message);
+	    }        
+	}
+	
+	//end status bar
 	//-- beginning of UART selector method
 	public static String chooseUART() {
 	    ArrayList<?> choices = DiscoverPorts.listPorts();
@@ -292,6 +341,8 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         window.setBounds(300, 300, 600, 600);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
+        
+        
 	}
 	
     public static void main (String[] args)

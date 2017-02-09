@@ -1,11 +1,12 @@
 package commsCommander;
 import serialconnection.Datapool.*;
 import java.lang.Thread;
-@SuppressWarnings("unused") // for Dev branch
 public class TimerTrash implements Runnable {
 public static long millis;
 public static boolean stop = false;
-public static int runMode = 0, points;
+public static int points;
+public static enum opMode {freerun, timeacq, pointacq};
+opMode runMode;
 private static int pointsAquired = 0;
         public void run() {
 
@@ -14,7 +15,7 @@ private static int pointsAquired = 0;
          //       System.out.println(stop);
                pointsAquired=0;
                switch(runMode){
-               case 0:
+               case freerun:
             	   while(!stop){
             	   SerialWriter.Send("read?");
                    try {
@@ -25,8 +26,8 @@ private static int pointsAquired = 0;
    				}
                    }
             	   break;
-               case 1:
-               case 2:
+               case timeacq:
+               case pointacq:
             	   for(pointsAquired = 0; pointsAquired < points && !stop; pointsAquired++){
             		   SerialWriter.Send("read?");
             		  // System.out.print(pointsAquired);
@@ -47,25 +48,24 @@ private static int pointsAquired = 0;
         	 switch(mode){
         	 /*
         	  * Configures the mode for sampling
-        	  * mode -1: only changes mode, ignores seconds
-        	  * mode 0: free running acquisition
-        	  * mode 1: sets to X sample mode, acquires X points then stops requesting more and thread closes; parameter is the number of points
-        	  * mode 2: time calculates how many points are needed at their delayed execution; parameter is the amount of time in minutes, the number of points is computed from that.
+        	  * mode 0 | opMode.freerun: free running acquisition
+        	  * mode 1 | opMode.timeacq: sets to X sample mode, acquires X points then stops requesting more and thread closes; parameter is the number of points
+        	  * mode 2 | opMode.: time calculates how many points are needed at their delayed execution; parameter is the amount of time in minutes, the number of points is computed from that.
         	  */
         	 case 0:
         		 millis = (long) (1000*SEC);// store millis for later use
-        		 runMode = 0;
+        		 runMode = opMode.freerun;
         		 points = -1;
         		 break;
         	 case 1:
         		 millis = (long) (1000*SEC);// store millis for later use
-        		 runMode =1;
+        		 runMode = opMode.timeacq;
         		 points =(int) parameter+1;
         		 break;
         	 case 2:
         		 millis = (long) (1000*SEC);// store millis for later use
-        		 runMode = 2;
-        		 points = (int) Math.ceil(((60*parameter)/SEC));
+        		 runMode = opMode.pointacq;
+        		 points = (int) Math.round(((60*parameter)/SEC));
         		// System.out.println(points);
         		 break;
         	 
