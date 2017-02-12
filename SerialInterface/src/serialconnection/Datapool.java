@@ -4,6 +4,7 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import guiBlock.GUI;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -163,7 +164,9 @@ public class Datapool{
     }
     
 public static void SerialRead(String Recieved){
-	if(Recieved.indexOf('E') != -1){ CSVFileHandling.AppendCSV(Recieved);
+	if(Recieved.indexOf('E') != -1){ 
+	CSVFileHandling.AppendCSV(Recieved);
+	GUI.AppendText(Recieved);
 	System.out.println(Recieved);
 	}//prints data to be appended to CSV
 	else IOCommander.processCommand(Recieved);

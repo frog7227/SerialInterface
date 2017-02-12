@@ -35,7 +35,7 @@ private static int pointsAquired = 0;
             		  // System.out.print(pointsAquired);
                        try {
        					Thread.sleep(millis);
-       					//GUI.setStatusbar();
+       					GUI.updateStatusBar();
        				} catch (InterruptedException e) {
        					e.printStackTrace();
        				}

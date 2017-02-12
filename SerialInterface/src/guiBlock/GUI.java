@@ -22,6 +22,7 @@ import fileHandling.CSVFileHandling;
 import serialconnection.Datapool;
 import serialconnection.DiscoverPorts;
 
+@SuppressWarnings("serial")
 public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static String  comPort = "COM1";
 	public static int Baud = 115200, aquireMode = 0;
@@ -29,6 +30,8 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static boolean isAquiring,isConnected, fileChosen;
 	public final static ImageIcon IOIOIcon = new ImageIcon("icon/IOIOI_mini.png", "IOIOI Icon");
 	public static JTextField statusBar;
+	public static JTextArea AquiredData;
+	public static String aquiredData = "";
 	
 	
 	public GUI()   // Constructor
@@ -37,18 +40,61 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	    Container c = getContentPane();
 	    c.setBackground(Color.WHITE);
 	    c.setLayout(new BorderLayout());
-	    c.add(new JLabel("This Part is useless!", 10));
+	   // c.add(new JLabel("This Part is useless!", 10));
 	    statusBar = new JTextField(0);//c.getWidth()-16
 	    statusBar.setBackground(new Color(245, 241, 222));
 	    statusBar.setEditable(false);
 	    updateStatusBar();
 	    getContentPane().add(statusBar, java.awt.BorderLayout.PAGE_END);
+	    AquiredData = new JTextArea((int)((600/16)-1),0);//c.getWidth()-16
+	    AquiredData.setBackground(Color.WHITE);
+	    AquiredData.setEditable(false);
+	    AquiredData.setBounds(0, 0, c.getWidth(), c.getHeight()-64);
+	    
+	    JScrollPane ScrollableAquiredData = new JScrollPane (AquiredData,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    c.add(ScrollableAquiredData,java.awt.BorderLayout.PAGE_START);
+	    
+	   // getContentPane().add(AquiredData, java.awt.BorderLayout.PAGE_START);
+	    
+	    
+	    
+	    c.addComponentListener(new ComponentListener() {
+			public void componentResized(ComponentEvent e) {
+	            // do stuff
+				//System.out.println(c.getSize());
+				
+				ScrollableAquiredData.setPreferredSize(new Dimension(c.getWidth(),c.getHeight()-16));
+	        }
+			
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				ScrollableAquiredData.setPreferredSize(new Dimension(c.getWidth(),c.getHeight()-16));
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+	    });
+	    
+	    
 	    
 	  }
 
 	//--end of main GUI
 	//begin of status bar
-	
+	public static void AppendText(String Text){
+		AquiredData.setText(AquiredData.getText() + Text + "\n");
+	}
 	public static void updateStatusBar() {
     	String message = " ";
    	    //add points if points are used
@@ -63,7 +109,8 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
     		break;
     	case 2:
     		if(sendParameter < 1) message += "Aquiring for " + (Math.round(sendParameter*60)) +" Seconds | ";
-    		else message += "Aquiring for " + (int)sendParameter +" Minutes | ";
+    		else if (sendParameter <60) message += "Aquiring for " + (int)sendParameter +" Minutes | ";
+    		else message += "Aquiring for " + (Math.round(sendParameter/60)) +" Hours | ";
     		break;
     	default:
     		message += "Aquisition Mode Error! | ";
@@ -93,7 +140,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static void CreateGUI() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		JMenuBar menuBar;
     	JMenu Filemenu, Baudmenu, Helpmenu, SAmenu, ModeMenu;
-    	JButton ConnectButton,COMPortButton,DisconnectButton,startStop;
+    	JButton ConnectButton,COMPortButton,startStop;
     	JMenuItem menuItem;
     	JRadioButtonMenuItem rbMenuItem;
     	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
