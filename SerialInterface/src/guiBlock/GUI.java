@@ -41,7 +41,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	    statusBar = new JTextField(0);//c.getWidth()-16
 	    statusBar.setBackground(new Color(245, 241, 222));
 	    statusBar.setEditable(false);
-	    setStatusBar();
+	    updateStatusBar();
 	    getContentPane().add(statusBar, java.awt.BorderLayout.PAGE_END);
 	    
 	  }
@@ -49,7 +49,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	//--end of main GUI
 	//begin of status bar
 	
-	public static void setStatusBar() {
+	public static void updateStatusBar() {
     	String message = " ";
    	    //add points if points are used
     	if(isAquiring) message += "Aquiring | ";
@@ -156,7 +156,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         rbMenuItem.addActionListener(new ActionListener()
         {public void actionPerformed(ActionEvent e){
         	aquireMode = 0;
-        	setStatusBar();
+        	updateStatusBar();
         	}});
         ModeMenu.add(rbMenuItem);
         
@@ -171,7 +171,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         	String pointsInput = JOptionPane.showInputDialog("Enter the number of points you'd like to aquire");
         	if(pointsInput == null || pointsInput.isEmpty()){ errorDialog("Invalid Entry"); aquireMode =0;}
         	else sendParameter = Double.parseDouble(pointsInput);
-        	setStatusBar();
+        	updateStatusBar();
         }});
         ModeMenu.add(rbMenuItem);
         
@@ -186,7 +186,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         	String TimeInput = JOptionPane.showInputDialog("Enter length of time to aquire");
         	if(TimeInput == null || TimeInput.isEmpty()){ errorDialog("Invalid Entry"); aquireMode =0;}
         	else sendParameter = Double.parseDouble(TimeInput); 
-        	setStatusBar();
+        	updateStatusBar();
         }});
         ModeMenu.add(rbMenuItem);
         
@@ -338,6 +338,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         	IOCommander.SRQData(!isAquiring, Seconds,aquireMode,sendParameter);
         	System.out.println(sendParameter);
         	if(aquireMode == 1) isAquiring =  !isAquiring;
+        	updateStatusBar();
         	/*
         	 if(!isAquiring) System.out.println("Stopped");
         	else System.out.println("Started");
