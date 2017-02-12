@@ -9,17 +9,18 @@ public static boolean stop = false;
 public static int points;
 public static enum opMode {freerun, timeacq, pointacq};
 opMode runMode;
-private static int pointsAquired = 0;
+private static int pointsAcquired = 0;
         public void run() {
 
-             //   System.out.println(Thread.currentThread()); Debug stuff
-              //  System.out.println(millis);
-         //       System.out.println(stop);
-               pointsAquired=0;
+               //System.out.println(Thread.currentThread()); //Debug stuff
+               // System.out.println(millis);
+                //System.out.println(stop);
+               pointsAcquired=0;
                switch(runMode){
                case freerun:
             	   while(!stop){
             	   SerialWriter.Send("read?");
+            	   GUI.pointCounter(false);
                    try {
    					Thread.sleep(millis);
    				} catch (InterruptedException e) {
@@ -30,12 +31,12 @@ private static int pointsAquired = 0;
             	   break;
                case timeacq:
                case pointacq:
-            	   for(pointsAquired = 0; pointsAquired < points && !stop; pointsAquired++){
+            	   for(pointsAcquired = 0; pointsAcquired < points && !stop; pointsAcquired++){
             		   SerialWriter.Send("read?");
-            		  // System.out.print(pointsAquired);
+            		  // System.out.print(pointsAcquired);
                        try {
        					Thread.sleep(millis);
-       					GUI.updateStatusBar();
+       					GUI.pointCounter(false);
        				} catch (InterruptedException e) {
        					e.printStackTrace();
        				}
@@ -43,6 +44,7 @@ private static int pointsAquired = 0;
             	   
             	   break;
                 }
+               GUI.setRunValue(false);
                }
    
         public TimerTrash(double SEC, int mode, double parameter) {
@@ -63,7 +65,7 @@ private static int pointsAquired = 0;
         	 case 1:
         		 millis = (long) (1000*SEC);// store millis for later use
         		 runMode = opMode.timeacq;
-        		 points =(int) parameter+1;
+        		 points =(int) parameter;
         		 break;
         	 case 2:
         		 millis = (long) (1000*SEC);// store millis for later use
@@ -78,6 +80,7 @@ private static int pointsAquired = 0;
 
         public static void ChangeThread(boolean changerun){
         	stop = changerun;
+        	//System.out.println(stop);
         }
         
 }

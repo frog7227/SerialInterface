@@ -18,10 +18,12 @@ public static Runnable TimedSender;
 	}
 	*/
 	public static void processCommand(String toProcess){
+		System.out.println(toProcess);
 		
 	//Stub method for invalid returns 	
 	}
 	public static void RequestData(){
+		// not implemented method
 
 
 }

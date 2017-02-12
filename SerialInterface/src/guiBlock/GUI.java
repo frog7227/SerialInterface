@@ -25,12 +25,12 @@ import serialconnection.DiscoverPorts;
 @SuppressWarnings("serial")
 public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static String  comPort = "COM1";
-	public static int Baud = 115200, aquireMode = 0;
+	public static int Baud = 115200, aquireMode = 0, pointsAcquired = 0;
 	public static double Seconds = 1,sendParameter = 1;
-	public static boolean isAquiring,isConnected, fileChosen;
+	public static boolean isAcquiring,isConnected, fileChosen;
 	public final static ImageIcon IOIOIcon = new ImageIcon("icon/IOIOI_mini.png", "IOIOI Icon");
 	public static JTextField statusBar;
-	public static JTextArea AquiredData;
+	public static JTextArea AcquiredData;
 	public static String aquiredData = "";
 	
 	
@@ -42,19 +42,19 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	    c.setLayout(new BorderLayout());
 	   // c.add(new JLabel("This Part is useless!", 10));
 	    statusBar = new JTextField(0);//c.getWidth()-16
-	    statusBar.setBackground(new Color(245, 241, 222));
+	    statusBar.setBackground(new Color(245, 241, 222));// a statusBar of color!
 	    statusBar.setEditable(false);
 	    updateStatusBar();
 	    getContentPane().add(statusBar, java.awt.BorderLayout.PAGE_END);
-	    AquiredData = new JTextArea((int)((600/16)-1),0);//c.getWidth()-16
-	    AquiredData.setBackground(Color.WHITE);
-	    AquiredData.setEditable(false);
-	    AquiredData.setBounds(0, 0, c.getWidth(), c.getHeight()-64);
+	    AcquiredData = new JTextArea((int)((600/16)-1),0);//c.getWidth()-16
+	    AcquiredData.setBackground(Color.WHITE);
+	    AcquiredData.setEditable(false);
+	    AcquiredData.setBounds(0, 0, c.getWidth(), c.getHeight()-64);
 	    
-	    JScrollPane ScrollableAquiredData = new JScrollPane (AquiredData,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	    c.add(ScrollableAquiredData,java.awt.BorderLayout.PAGE_START);
+	    JScrollPane ScrollableAcquiredData = new JScrollPane (AcquiredData,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    c.add(ScrollableAcquiredData,java.awt.BorderLayout.PAGE_START);
 	    
-	   // getContentPane().add(AquiredData, java.awt.BorderLayout.PAGE_START);
+	   // getContentPane().add(AcquiredData, java.awt.BorderLayout.PAGE_START);
 	    
 	    
 	    
@@ -62,43 +62,62 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 			public void componentResized(ComponentEvent e) {
 	            // do stuff
 				//System.out.println(c.getSize());
-				
-				ScrollableAquiredData.setPreferredSize(new Dimension(c.getWidth(),c.getHeight()-16));
+				ScrollableAcquiredData.setPreferredSize(new Dimension(c.getWidth(),c.getHeight()-16));
 	        }
 			
 
 			@Override
 			public void componentHidden(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 
 			@Override
 			public void componentMoved(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
-				ScrollableAquiredData.setPreferredSize(new Dimension(c.getWidth(),c.getHeight()-16));
+				// Auto-generated method stub
+				ScrollableAcquiredData.setPreferredSize(new Dimension(c.getWidth(),c.getHeight()-16));
 			}
 
 			@Override
 			public void componentShown(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 	    });
 	    
 	    
-	    
+	    // You might just be asking yourself where todo went. I'll never tell you! never!
 	  }
 
 	//--end of main GUI
-	//begin of status bar
-	public static void AppendText(String Text){
-		AquiredData.setText(AquiredData.getText() + Text + "\n");
+	public static void changeRunValue(){
+		isAcquiring = !isAcquiring;
+		updateStatusBar();
 	}
+	public static void setRunValue(boolean x){
+		isAcquiring = x;
+		updateStatusBar();
+	}
+	public static void pointCounter(boolean clear){
+		if(!clear) pointsAcquired++;
+		else pointsAcquired = 0;
+		updateStatusBar();
+	}
+	
+	
+	
+	public static void AppendText(String Text){
+		AcquiredData.setText(AcquiredData.getText() + Text + "\n");
+	}
+	public static void ClearText(){
+		AcquiredData.setText("");
+	}
+	//begin of status bar
+	
 	public static void updateStatusBar() {
     	String message = " ";
    	    //add points if points are used
-    	if(isAquiring) message += "Aquiring | ";
+    	if(isAcquiring) message += "Aquiring | ";
     	else message += "Not aquiring | ";
     	switch(aquireMode){
     	case 0:
@@ -116,6 +135,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
     		message += "Aquisition Mode Error! | ";
     		break;
     	}
+    	message+= " " + pointsAcquired + " points Acquired";
         statusBar.setText(message);
     }
 	
@@ -168,15 +188,19 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         
         menuItem = new JMenuItem("Save",KeyEvent.VK_S);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription("Saves Aquired Data");
+        menuItem.getAccessibleContext().setAccessibleDescription("Saves Acquired Data");
         Filemenu.add(menuItem);
         menuItem.addActionListener(new ActionListener()
         {public void actionPerformed(ActionEvent e){
         	//System.out.println("Placeholder for Save");
         	IOCommander.SRQData(false, Seconds, 0,0);
-        	if(fileChosen) CSVFileHandling.SaveCSV();
+        	if(fileChosen){
+        	CSVFileHandling.SaveCSV();
+        	ClearText();
+        	}
         	else errorDialog("No file or changes to Save!");
         	fileChosen=false;
+        	
         }});
        /* may not implement requires too much modification of CSV Writer
         menuItem = new JMenuItem("Save As",KeyEvent.VK_N);
@@ -358,6 +382,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         //--
         
       //for connect button
+        /*
         ConnectButton = new JButton("Connect");
         ConnectButton.addActionListener(new ActionListener()
         {public void actionPerformed(ActionEvent e){
@@ -370,27 +395,43 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 				errorDialog("Unable to connect to the serial port " + comPort);
 				isConnected = false;
 			}
-            System.out.println("Successfully connected to " + comPort + " @ " + Baud + " baud");
+            //System.out.println("Successfully connected to " + comPort + " @ " + Baud + " baud");
             isConnected = true;
         }});	
         
         menuBar.add(ConnectButton);
         
+        */
         //--
         
         startStop = new JButton("Start/Stop");
         startStop.addActionListener(new ActionListener()
         {public void actionPerformed(ActionEvent e){
+        	if(!isConnected){
+        		try {
+    				new Datapool().connect(comPort,Baud);
+    				
+    			} catch (Exception e1) {
+    				// TODO Auto-generated catch block aka me not gaf
+    				e1.printStackTrace();
+    				errorDialog("Unable to connect to the serial port " + comPort);
+    				isConnected = false;
+    			}
+        		System.out.println("Successfully connected to " + comPort + " @ " + Baud + " baud");
+                isConnected = true;
+        		
+        	}
         	if(isConnected && fileChosen){
-        	IOCommander.SRQData(!isAquiring, Seconds,aquireMode,sendParameter);
+        	IOCommander.SRQData(!isAcquiring, Seconds,aquireMode,sendParameter);
         	System.out.println(sendParameter);
-        	if(aquireMode == 1) isAquiring =  !isAquiring;
-        	updateStatusBar();
+        	changeRunValue();
+        	pointCounter(true);
+        	
         	/*
-        	 if(!isAquiring) System.out.println("Stopped");
+        	 if(!isAcquiring) System.out.println("Stopped");
         	else System.out.println("Started");
         	*/
-        	}else if(!isConnected)errorDialog("You never connected to any serial port!");
+        	}else if(!isConnected)errorDialog("A serial port was never connected to!");
         	else errorDialog("file was not chosen!");
         }});
         
