@@ -8,7 +8,11 @@ package guiBlock;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -20,11 +24,11 @@ import serialconnection.DiscoverPorts;
 
 public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static String  comPort = "COM1";
-	public static int Baud = 115200, aquireMode = 2;
+	public static int Baud = 115200, aquireMode = 0;
 	public static double Seconds = 1,sendParameter = 1;
 	public static boolean isAquiring,isConnected, fileChosen;
 	public final static ImageIcon IOIOIcon = new ImageIcon("icon/IOIOI_mini.png", "IOIOI Icon");
-	public static String[] BottomBar;
+	public static JTextField statusBar;
 	
 	
 	public GUI()   // Constructor
@@ -34,53 +38,39 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	    c.setBackground(Color.WHITE);
 	    c.setLayout(new BorderLayout());
 	    c.add(new JLabel("This Part is useless!", 10));
-	    StatusBar statusBar = new StatusBar();
+	    statusBar = new JTextField(0);//c.getWidth()-16
+	    statusBar.setBackground(new Color(245, 241, 222));
+	    statusBar.setEditable(false);
+	    setStatusBar();
 	    getContentPane().add(statusBar, java.awt.BorderLayout.PAGE_END);
 	    
 	  }
-	
-	
-	
-	
-	
+
 	//--end of main GUI
 	//begin of status bar
 	
-	public class StatusBar extends JLabel {
-
-	    /** Creates a new instance of StatusBar */
-	    public StatusBar() {
-	        super();
-	        super.setPreferredSize(new Dimension(super.getWidth(), 16));
-	       // super.getRootPane().setBackground(Color.lightGray);
-	        setMessage("Not Aquiring", "Acq");
-	        
-	    }
-
-	    public void setMessage(String message,String Element) {
-	    	
-	    	int offset = 0;
-	    	switch(Element){
-	    	case "Acq":
-	    		offset = 1;
-	    		break;
-	    	case "box":
-	    		//stub
-	    		break;
-	    	case "Points":
-	    		offset = 64;
-	    		break;
-	    		
-	    	default:
-	    		errorDialog("Invalid Element '" +  Element + "' Was recieved!");
-	    		break;
-	    	}
-	    	//add for loop to add spaces to fix offset, then append the textJ
-	    	
-	    	//setHorizontalTextPosition(offset);
-	        setText(message);
-	    }        
-	}
+	public static void setStatusBar() {
+    	String message = " ";
+   	    //add points if points are used
+    	if(isAquiring) message += "Aquiring | ";
+    	else message += "Not aquiring | ";
+    	switch(aquireMode){
+    	case 0:
+    		message += "Free Running Aquisition ";
+    		break;
+    	case 1:
+    		message += "Aquiring " + (int)sendParameter + " Points | ";
+    		break;
+    	case 2:
+    		if(sendParameter < 1) message += "Aquiring for " + (Math.round(sendParameter*60)) +" Seconds | ";
+    		else message += "Aquiring for " + (int)sendParameter +" Minutes | ";
+    		break;
+    	default:
+    		message += "Aquisition Mode Error! | ";
+    		break;
+    	}
+        statusBar.setText(message);
+    }
 	
 	//end status bar
 	//-- beginning of UART selector method
@@ -102,7 +92,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	
 	public static void CreateGUI() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		JMenuBar menuBar;
-    	JMenu Filemenu, Baudmenu, Helpmenu, SAmenu;
+    	JMenu Filemenu, Baudmenu, Helpmenu, SAmenu, ModeMenu;
     	JButton ConnectButton,COMPortButton,DisconnectButton,startStop;
     	JMenuItem menuItem;
     	JRadioButtonMenuItem rbMenuItem;
@@ -151,6 +141,58 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         	System.out.println("Placeholder for Save as");
         }});
 	*/
+      //Mode Menu
+        ModeMenu = new JMenu("Mode");
+        ModeMenu.setMnemonic(KeyEvent.VK_M);
+        ModeMenu.getAccessibleContext().setAccessibleDescription("Adjusts the Aquisition Mode");
+        
+        //add radio buttons to mode menu
+        ModeMenu.addSeparator();
+        ButtonGroup modeChoice = new ButtonGroup();
+
+        rbMenuItem = new JRadioButtonMenuItem("Free Run");
+        rbMenuItem.setSelected(true);
+        modeChoice.add(rbMenuItem);
+        rbMenuItem.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent e){
+        	aquireMode = 0;
+        	setStatusBar();
+        	}});
+        ModeMenu.add(rbMenuItem);
+        
+        //--
+        
+        rbMenuItem = new JRadioButtonMenuItem("Points");
+        rbMenuItem.setSelected(true);
+        modeChoice.add(rbMenuItem);
+        rbMenuItem.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent e){
+        	aquireMode = 1;
+        	String pointsInput = JOptionPane.showInputDialog("Enter the number of points you'd like to aquire");
+        	if(pointsInput == null || pointsInput.isEmpty()){ errorDialog("Invalid Entry"); aquireMode =0;}
+        	else sendParameter = Double.parseDouble(pointsInput);
+        	setStatusBar();
+        }});
+        ModeMenu.add(rbMenuItem);
+        
+        //--
+        
+        rbMenuItem = new JRadioButtonMenuItem("Time");
+        rbMenuItem.setSelected(true);
+        modeChoice.add(rbMenuItem);
+        rbMenuItem.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent e){
+        	aquireMode = 2;
+        	String TimeInput = JOptionPane.showInputDialog("Enter length of time to aquire");
+        	if(TimeInput == null || TimeInput.isEmpty()){ errorDialog("Invalid Entry"); aquireMode =0;}
+        	else sendParameter = Double.parseDouble(TimeInput); 
+        	setStatusBar();
+        }});
+        ModeMenu.add(rbMenuItem);
+        
+        menuBar.add(ModeMenu);
+        
+        
         //Baud rate menu
         Baudmenu = new JMenu("Baud Rate");
         Baudmenu.setMnemonic(KeyEvent.VK_B);
@@ -329,11 +371,23 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         menuItem = new JMenuItem("About",KeyEvent.VK_A);
         		menuItem.addActionListener(new ActionListener()
                 {public void actionPerformed(ActionEvent e){
-                	System.out.println("Placeholder for About");
+                	//System.out.println("Placeholder for About");
+                	if(Desktop.isDesktopSupported())
+                	{
+                	  try {
+						Desktop.getDesktop().browse(new URI("https://github.com/frog7227/SerialInterface")); //Shameless Help
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block 
+						e1.printStackTrace();
+					} catch (URISyntaxException e1) {
+						// TODO Auto-generated catch block WHEN THE URL SYNTAX IS MESSED UP
+						e1.printStackTrace();
+					}
+                	}
                 }});	
         menuItem.getAccessibleContext().setAccessibleDescription("Gives Info About this Program");
         Helpmenu.add(menuItem);
-        Helpmenu.addSeparator();
+      //Helpmenu.addSeparator();
         
         //--
         

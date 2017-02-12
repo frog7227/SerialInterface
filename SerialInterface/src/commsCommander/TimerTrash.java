@@ -1,6 +1,8 @@
 package commsCommander;
 import serialconnection.Datapool.*;
 import java.lang.Thread;
+
+import guiBlock.GUI;
 public class TimerTrash implements Runnable {
 public static long millis;
 public static boolean stop = false;
@@ -33,6 +35,7 @@ private static int pointsAquired = 0;
             		  // System.out.print(pointsAquired);
                        try {
        					Thread.sleep(millis);
+       					//GUI.setStatusbar();
        				} catch (InterruptedException e) {
        					e.printStackTrace();
        				}
@@ -50,7 +53,7 @@ private static int pointsAquired = 0;
         	  * Configures the mode for sampling
         	  * mode 0 | opMode.freerun: free running acquisition
         	  * mode 1 | opMode.timeacq: sets to X sample mode, acquires X points then stops requesting more and thread closes; parameter is the number of points
-        	  * mode 2 | opMode.: time calculates how many points are needed at their delayed execution; parameter is the amount of time in minutes, the number of points is computed from that.
+        	  * mode 2 | opMode.pointacq: time calculates how many points are needed at their delayed execution; parameter is the amount of time in minutes, the number of points is computed from that.
         	  */
         	 case 0:
         		 millis = (long) (1000*SEC);// store millis for later use
