@@ -121,7 +121,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
     	else message += "Not aquiring | ";
     	switch(aquireMode){
     	case 0:
-    		message += "Free Running Aquisition ";
+    		message += "Free Running Aquisition |";
     		break;
     	case 1:
     		message += "Aquiring " + (int)sendParameter + " Points | ";
