@@ -160,7 +160,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	public static void CreateGUI() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		JMenuBar menuBar;
     	JMenu Filemenu, Baudmenu, Helpmenu, SAmenu, ModeMenu;
-    	JButton ConnectButton,COMPortButton,startStop;
+    	JButton COMPortButton,startStop;
     	JMenuItem menuItem;
     	JRadioButtonMenuItem rbMenuItem;
     	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

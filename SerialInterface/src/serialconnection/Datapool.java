@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import commsCommander.IOCommander;
 import fileHandling.CSVFileHandling;
@@ -120,7 +118,8 @@ public class Datapool{
     {
         static OutputStream out;
         
-        public SerialWriter ( OutputStream out)
+        @SuppressWarnings("static-access")
+		public SerialWriter ( OutputStream out)
         {
             this.out = out;
             
@@ -145,7 +144,8 @@ public class Datapool{
                 System.out.println("Oh Fiddlesticks! I could not write anything to the serial port or its buffer!");
             }
         }
-        public void run ()
+        @SuppressWarnings("static-access")
+		public void run ()
         {
             try
             {                
